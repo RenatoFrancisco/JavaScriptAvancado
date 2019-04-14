@@ -39,7 +39,7 @@
             console.log(e.target.error);
         };
 
-        function Adiciona() {
+        function adiciona() {
 
             let transaction = connection.transaction(['negociacoes'], 'readwrite');
             
@@ -50,6 +50,36 @@
             let request = store.add(negociacao);
 
             console.log('Negociação incluída com sucesso!')
+        }
+
+        function listaTodos() {
+
+            let transaction = connection.transaction(['negociacoes'], 'readwrite');
+            let store = transaction.objectStore('negociacoes');
+            let negociacoes = [];
+
+            let cursor = store.openCursor();
+
+            cursor.onsuccess = e => {
+
+                let atual = e.target.result;
+
+                if (atual) {
+
+                    let dado = atual.value;
+
+                    negociacoes.push(new Negociacao(dado._data, dado._quantidade, dado._valor));
+
+                    atual.continue();
+                } else {
+
+                    console.log(negociacoes);
+                }
+
+                cursor.onerror = e => {
+                    console.log('Error: ' + e.target.error.name);
+                };
+            }
         }
 
     </script>
