@@ -15,7 +15,17 @@ class NegociacaoController {
        
         this._mensagem = new Bind(
             new Mensagem(), new MensagemView($('#mensagemView')),
-            'texto');       
+            'texto');
+            
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.listaTodos())
+            .then(negociacoes => 
+                negociacoes.forEach(negociacao =>
+                    this._listaNegociacoes.adiciona(negociacao)
+                )
+            );
     }
     
     adiciona(event) {
@@ -27,7 +37,7 @@ class NegociacaoController {
             .then(connection => {
 
                 let negociacao = this._criaNegociacao();
-                
+
                 new NegociacaoDao(connection)
                     .adiciona(negociacao)
                     .then(() => {
