@@ -35,39 +35,59 @@ class NegociacaoDao {
 
         return new Promise((resolve, reject) => {
 
-            let cursor = this._connection
-                .transaction([this._store], 'readwrite')
-                .objectStore(this._store)
-                .openCursor();
+                let cursor = this._connection
+                    .transaction([this._store], 'readwrite')
+                    .objectStore(this._store)
+                    .openCursor();
 
-            let negociacoes = [];
+                let negociacoes = [];
 
-            cursor.onsuccess = e => {
+                cursor.onsuccess = e => {
 
-                let atual = e.target.result;
+                    let atual = e.target.result;
 
-                if (atual) {
+                    if (atual) {
 
-                    let dado = atual.value;
+                        let dado = atual.value;
 
-                    negociacoes.push(new Negociacao(
-                        dado._data,
-                        dado._quantidade,
-                        dado._valor));
+                        negociacoes.push(new Negociacao(
+                            dado._data,
+                            dado._quantidade,
+                            dado._valor));
 
-                    atual.continue();
-                } else {
+                        atual.continue();
+                    } else {
 
-                    resolve(negociacoes);
-                }
+                        resolve(negociacoes);
+                    }
 
-                cursor.onerror = e => {
+                    cursor.onerror = e => {
+
+                        console.log(e.target.error);
+                        reject('Não foi possível listar as negociações.');
+                    };
+                };
+
+            });
+
+        }
+
+        apagaTodos() {
+
+            return new Promise((resolve, reject) => {
+
+                let request = this._connection
+                    .transaction([this._store], 'readwrite')
+                    .objectStore(this._store)
+                    .clear();
+
+                request.onsuccess = e => resolve('Negociações removidas com sucesso.')
+                
+                request.onerror = e => {
 
                     console.log(e.target.error);
-                    reject('Não foi possível listar as negociações.');
-                };
-            };
-
-        });
-    }
+                    reject('Não foi possível remover as negociações.');
+                }
+            });
+        }
 }
