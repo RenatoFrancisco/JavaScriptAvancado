@@ -1,3 +1,5 @@
+import { HttpService } from './HttpService';
+
 class NegociacaoService {
     
     constructor() {
