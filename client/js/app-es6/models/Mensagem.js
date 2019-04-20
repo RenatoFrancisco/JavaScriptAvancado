@@ -1,4 +1,5 @@
-class Mensagem {
+
+export class Mensagem {
     
     constructor(texto='') {
         
